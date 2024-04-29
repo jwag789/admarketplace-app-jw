@@ -1,32 +1,54 @@
-import AcmeLogo from '@/app/ui/acme-logo';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
+'use client'
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Battery50Icon } from '@heroicons/react/24/outline';
+import { Post } from '@/app/lib/definitions';
 
 export default function Page() {
+  const [posts, setPosts] = useState<Post[]>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then((res) => res.json())
+      .then((postsResponse) => {
+        setLoading(false)
+        setPosts(postsResponse)
+      })
+  }, [])
+
   return (
-    <main className="flex min-h-screen flex-col p-6">
-      <div className="flex h-20 shrink-0 items-end rounded-lg bg-blue-500 p-4 md:h-52">
-        {/* <AcmeLogo /> */}
-      </div>
-      <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
-        <div className="flex flex-col justify-center gap-6 rounded-lg bg-gray-50 px-6 py-10 md:w-2/5 md:px-20">
-          <p className={`text-xl text-gray-800 md:text-3xl md:leading-normal`}>
-            <strong>Welcome to Acme.</strong> This is the example for the{' '}
-            <a href="https://nextjs.org/learn/" className="text-blue-500">
-              Next.js Learn Course
-            </a>
-            , brought to you by Vercel.
-          </p>
-          <Link
-            href="/login"
-            className="flex items-center gap-5 self-start rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-400 md:text-base"
+    <main className="flex h-dvh flex-col p-6">
+      <div className="flex w-full h-dvh rounded-lg items-center justify-items-center bg-slate-200 shadow-lg p-4">
+        <>
+        {loading ? 
+          <div className="w-full flex flex-col items-center justify-items-center">
+          <Battery50Icon className="h-20 w-20" />
+          <h1 className="text-2xl">Loading</h1>
+          </div>
+        :
+        <>
+        {posts &&
+          <>
+            <select
+              
+              onChange={(e) => {
+                router.push(`/posts/${e.target.value}`)
+              }}
+              className="w-full bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
           >
-            <span>Log in</span> <ArrowRightIcon className="w-5 md:w-6" />
-          </Link>
-        </div>
-        <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
-          {/* Add Hero Images Here */}
-        </div>
+              <option selected disabled>Select a Post</option>
+              {posts.map((post) =>
+                <option key={post.id.toString()} value={post.id.toString()}>{post.title}</option>
+              )}
+            </select>
+          </>
+        }
+        </>
+        }
+        </>
       </div>
     </main>
   );
