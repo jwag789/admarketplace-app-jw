@@ -1,4 +1,4 @@
-## Next.js App Router App
+## adMarketplace App by Justin Wagner
 
 To run in dev:\
 npm run dev
